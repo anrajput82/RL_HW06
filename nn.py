@@ -41,15 +41,17 @@ class ValueFunctionWithNN(ValueFunctionWithApproximation):
 
     def update(self,alpha,G,s_tau):
         self.model.train()
-
         self.optimizer.zero_grad()
 
-        state_tensor = torch.as_tensor(s_tau, dtype=torch.float32).view(1, -1)
-        target_tensor = torch.as_tensor([G], dtype=torch.float32)
 
-        prediction = self.model(state_tensor).squeeze()
-        loss = self.loss_fn(prediction, target_tensor)
+        state_tensor = torch.as_tensor(s_tau, dtype=torch.float32).view(1, -1)
+        target_tensor = torch.as_tensor([G], dtype=torch.float32) 
+
+        predicted_value = self.model(state_tensor).view(-1)       
+
+
+        loss = self.loss_fn(predicted_value, target_tensor)
+
 
         loss.backward()
         self.optimizer.step()
-
